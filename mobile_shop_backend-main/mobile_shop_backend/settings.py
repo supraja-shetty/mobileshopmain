@@ -9,9 +9,8 @@ https://docs.djangoproject.com/en/5.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
+
 import os
-
-
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -30,7 +29,6 @@ DEBUG = True
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',')
 
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -40,11 +38,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'website',
+    'website',  # Your app
+    'whitenoise.runserver_nostatic',  # For serving static files in production
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # WhiteNoise for static files
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -58,7 +58,7 @@ ROOT_URLCONF = 'mobile_shop_backend.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [],  # Add custom template dirs if needed
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -119,15 +119,19 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 
-# Directory where static files will be collected
+# Directory where collectstatic will gather files for production
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-# Additional locations the staticfiles app will traverse
+# Additional directories to look for static files during development
 STATICFILES_DIRS = [
-    BASE_DIR / 'static',
+    BASE_DIR / 'mobile_shop_backend' / 'static',  # <-- Correct path for your images/js/css
 ]
+
+# WhiteNoise storage for caching and compression
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
